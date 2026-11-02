@@ -38,7 +38,7 @@ public class Account {
     @PositiveOrZero // possibly remove later if we start supporting negative balances
     private BigDecimal balance;
 
-    @Column(name = "currency_code", nullable = false, columnDefinition = "char(3)")
+    @Column(name = "currency_code", nullable = false, length = 3)
     @NotNull
     private String currencyCode;
 

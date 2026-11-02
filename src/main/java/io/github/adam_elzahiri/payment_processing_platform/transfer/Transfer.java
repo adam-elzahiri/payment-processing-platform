@@ -43,7 +43,7 @@ public class Transfer {
     @Positive
     private BigDecimal amount;
 
-    @Column(name = "currency_code", nullable = false, columnDefinition = "char(3)")
+    @Column(name = "currency_code", nullable = false, length = 3)
     @NotNull
     private String currencyCode;
 
