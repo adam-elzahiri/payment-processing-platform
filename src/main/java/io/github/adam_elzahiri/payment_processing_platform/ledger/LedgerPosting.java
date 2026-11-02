@@ -11,7 +11,7 @@ import org.hibernate.annotations.Generated;
 import org.hibernate.generator.EventType;
 
 import java.math.BigDecimal;
-import java.time.OffsetDateTime;
+import java.time.Instant;
 import java.util.UUID;
 
 @Entity
@@ -26,7 +26,7 @@ public class LedgerPosting {
 
     @Generated(event = EventType.INSERT)
     @Column(name = "created_at", nullable = false, insertable = false, updatable = false)
-    private OffsetDateTime createdAt;
+    private Instant createdAt;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "transfer_id", nullable = false)
