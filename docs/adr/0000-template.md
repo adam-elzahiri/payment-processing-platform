@@ -1,5 +1,5 @@
 # ADR-NNNN: ADR title
-- **Status:** Proposed | Accepted | Superseded | Rejected
+- **Status:** Accepted | Superseded 
 - **Date:** YYYY-MM-DD
 
 ## Context
