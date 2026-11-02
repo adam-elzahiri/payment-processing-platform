@@ -94,12 +94,14 @@
 			<scope>runtime</scope>
 		</dependency>
 
+		<!-- Source: https://mvnrepository.com/artifact/org.projectlombok/lombok -->
 		<dependency>
 			<groupId>org.projectlombok</groupId>
 			<artifactId>lombok</artifactId>
 			<version>1.18.48</version>
 			<scope>provided</scope>
 		</dependency>
+
 	</dependencies>
 
 	<build>
