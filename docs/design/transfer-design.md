@@ -30,27 +30,27 @@ erDiagram
     TRANSFER ||--|{ LEDGER_POSTING : groups
 
     CUSTOMER {
-        bigint id PK
+        UUID id PK
         varchar name
     }
     ACCOUNT {
-        bigint id PK
-        bigint customer_id FK
+        UUID id PK
+        UUID customer_id FK
         numeric balance "cached; NUMERIC(20,4)"
         char currency_code "one currency per account"
     }
     TRANSFER {
-        bigint id PK
-        bigint source_account_id FK
-        bigint destination_account_id FK
+        UUID id PK
+        UUID source_account_id FK
+        UUID destination_account_id FK
         numeric amount "positive; NUMERIC(20,4)"
         char currency_code
         varchar status
     }
     LEDGER_POSTING {
-        bigint id PK
-        bigint transfer_id FK
-        bigint account_id FK
+        UUID id PK
+        UUID transfer_id FK
+        UUID account_id FK
         numeric amount "signed; NUMERIC(20,4)"
     }
 ```
