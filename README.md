@@ -1,6 +1,6 @@
 # Payment Processing Platform
 
-A Spring Boot backend project exploring account-to-account transfers, ledger design, and reliable handling of monetary values. The repository documents the proposed design separately from implemented application behavior.
+A personal Java and Spring Boot project exploring account-to-account payments and ledger design, with attention to transaction consistency, concurrency, idempotency, and monetary precision. It documents proposed designs separately from behavior currently implemented in the application.
 
 ## Design
 
