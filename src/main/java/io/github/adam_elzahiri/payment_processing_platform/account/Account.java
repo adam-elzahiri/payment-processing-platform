@@ -1,6 +1,6 @@
 package io.github.adam_elzahiri.payment_processing_platform.account;
 
-import io.github.adam_elzahiri.payment_processing_platform.customer.Customer;
+import io.github.adam_elzahiri.payment_processing_platform.user.User;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.PositiveOrZero;
@@ -29,9 +29,9 @@ public class Account {
     private Instant createdAt;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "customer_id", nullable = false)
+    @JoinColumn(name = "user_id", nullable = false)
     @NotNull
-    private Customer customer;
+    private User user;
 
     @Column(name = "balance", nullable = false, precision = 20, scale = 4)
     @NotNull
@@ -42,8 +42,8 @@ public class Account {
     @NotNull
     private String currencyCode;
 
-    public Account(Customer customer, String currencyCode) {
-        this.customer = customer;
+    public Account(User user, String currencyCode) {
+        this.user = user;
         this.currencyCode = currencyCode;
         this.balance = BigDecimal.ZERO;
     }

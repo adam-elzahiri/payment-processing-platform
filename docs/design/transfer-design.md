@@ -11,10 +11,10 @@ Currency conversion, real external payment networks, production deposits, withdr
 ## Account model
 
 - A **Customer** owns zero or more **Accounts**. Wallets are not part of the first-version model.
-- Each **Account** represents one customer balance in exactly one currency.
-- A customer may hold accounts in multiple currencies, with at most one account per currency. The proposed database schema enforces this with a unique constraint on `(customer_id, currency_code)`.
+- Each **Account** represents one user balance in exactly one currency.
+- A user may hold accounts in multiple currencies, with at most one account per currency. The proposed database schema enforces this with a unique constraint on `(customer_id, currency_code)`.
 - Each account stores a cached posted balance for fast reads. The proposed money representation is PostgreSQL `NUMERIC(20,4)` with a currency code; currency-specific scale validation occurs in the application. See [ADR-0001](../adr/0001-store-monetary-amounts-as-exact-decimals.md).
-- Pending simulated external funding does not increase an account's posted or available balance. Internal customer-to-customer transfers post immediately, so outgoing transfer reservations are not part of the initial model.
+- Pending simulated external funding does not increase an account's posted or available balance. Internal user-to-user transfers post immediately, so outgoing transfer reservations are not part of the initial model.
 - Ledger postings preserve the account's posted-balance history. They are not summed on every transfer. Posted balances are updated with the postings in the same database transaction and can be verified or repaired from those postings if a discrepancy is detected.
 
 ## Conceptual ERD
@@ -69,9 +69,9 @@ For a fee-free transfer, the source account’s cached balance decreases by EUR 
 
 ## Transfer and funding lifecycle
 
-An internal customer-to-customer transfer posts immediately after validation and a successful funds check. The transfer, its two ledger postings, and both cached posted-balance updates are written in one database transaction. Either all changes commit or none do.
+An internal user-to-user transfer posts immediately after validation and a successful funds check. The transfer, its two ledger postings, and both cached posted-balance updates are written in one database transaction. Either all changes commit or none do.
 
-Opening funds for development are represented as simulated external-bank funding. That funding may remain pending until an explicit simulated confirmation. While pending, it creates no posted ledger entries and does not increase the customer's posted or available balance. On confirmation, the funding operation posts the customer credit and its matching ledger entry atomically. A failed or rejected funding operation creates no posted entries.
+Opening funds for development are represented as simulated external-bank funding. That funding may remain pending until an explicit simulated confirmation. While pending, it creates no posted ledger entries and does not increase the user's posted or available balance. On confirmation, the funding operation posts the user credit and its matching ledger entry atomically. A failed or rejected funding operation creates no posted entries.
 
 The ledger postings are the durable history used to explain posted balances and to verify or repair a cached balance if a discrepancy is detected. Recalculating a balance from the full history is not part of the ordinary transfer path.
 
@@ -104,7 +104,7 @@ Posted ledger history is immutable. A correction is represented by a new linked 
 
 ## Decisions still open
 
-- **Account provisioning:** Is a default EUR account created with each customer, or only when an account is requested?
+- **Account provisioning:** Is a default EUR account created with each user, or only when an account is requested?
 - **Funding model:** Does simulated funding use the `Transfer` entity or a separate funding entity, and how are its external-funding ledger accounts represented?
 - **Concurrent funds checks:** How are simultaneous internal transfers serialized or rejected to prevent spending the same funds twice?
 - **Idempotency policy:** What is the key's scope and retention period?
@@ -115,8 +115,8 @@ Posted ledger history is immutable. A correction is represented by a new linked 
 
 - A successful transfer creates one transfer with balanced postings and updates both cached balances.
 - An internal transfer posts immediately, creating both ledger postings and updating both cached balances atomically.
-- Pending simulated funding does not change the customer's posted or available balance before confirmation.
-- Confirming simulated funding creates the customer credit and matching external-funding posting atomically; rejecting it creates no posted entries.
+- Pending simulated funding does not change the user's posted or available balance before confirmation.
+- Confirming simulated funding creates the user credit and matching external-funding posting atomically; rejecting it creates no posted entries.
 - Invalid input creates no transfer, postings, or balance changes.
 - A failure during processing leaves no partial transfer effect.
 - A matching retry with the same idempotency key does not create a duplicate.

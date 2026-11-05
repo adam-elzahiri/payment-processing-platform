@@ -1,8 +1,8 @@
-package io.github.adam_elzahiri.payment_processing_platform.customer;
+package io.github.adam_elzahiri.payment_processing_platform.user;
 
 import jakarta.validation.constraints.NotBlank;
 
-public record CreateCustomerRequest(
+public record CreateUserRequest(
 
         @NotBlank
         String firstName,

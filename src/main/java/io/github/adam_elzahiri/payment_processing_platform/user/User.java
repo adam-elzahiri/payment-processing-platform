@@ -1,4 +1,4 @@
-package io.github.adam_elzahiri.payment_processing_platform.customer;
+package io.github.adam_elzahiri.payment_processing_platform.user;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -18,10 +18,10 @@ import java.time.Instant;
 import java.util.UUID;
 
 @Entity
-@Table(name = "customer")
+@Table(name = "app_user")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Customer {
+public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -30,6 +30,12 @@ public class Customer {
     @Generated(event = EventType.INSERT)
     @Column(name = "created_at", nullable = false, insertable = false, updatable = false)
     private Instant createdAt;
+
+    @Column(nullable = false, unique = true, length = 320)
+    private String email;
+
+    @Column(name = "password_hash", nullable = false, length = 255)
+    private String passwordHash;
 
     @Column(name = "first_name", nullable = false, columnDefinition = "text")
     @NotBlank
@@ -41,7 +47,7 @@ public class Customer {
     @Setter
     private String lastName;
 
-    public Customer(String firstName, String lastName) {
+    public User(String firstName, String lastName) {
         this.firstName = firstName;
         this.lastName = lastName;
     }
