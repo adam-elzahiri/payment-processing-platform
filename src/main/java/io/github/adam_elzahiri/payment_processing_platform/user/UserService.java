@@ -7,12 +7,12 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class UserService {
 
-    private final UserRepository customerRepository;
+    private final UserRepository userRepository;
 
-    User createCustomer(CreateUserRequest createUserRequest) {
+    User createUser(CreateUserRequest createUserRequest) {
         User newUser = new User(createUserRequest.firstName(), createUserRequest.lastName());
 
-        return customerRepository.save(newUser);
+        return userRepository.save(newUser);
     }
 
 }

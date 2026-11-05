@@ -17,8 +17,8 @@ public class UserController {
     private final UserService userService;
 
     @PostMapping
-    public ResponseEntity<UserResponse> createCustomer(@Valid @RequestBody CreateUserRequest createUserRequest) {
-        User savedUser = userService.createCustomer(createUserRequest);
+    public ResponseEntity<UserResponse> createUser(@Valid @RequestBody CreateUserRequest createUserRequest) {
+        User savedUser = userService.createUser(createUserRequest);
 
         UserResponse response = new UserResponse(
                 savedUser.getId(),
