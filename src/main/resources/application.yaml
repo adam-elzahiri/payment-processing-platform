@@ -10,3 +10,6 @@ spring:
       ddl-auto: validate
   flyway:
     enabled: true
+security:
+  jwt:
+    secret: ${JWT_SECRET}
