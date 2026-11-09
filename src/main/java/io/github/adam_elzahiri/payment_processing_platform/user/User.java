@@ -34,7 +34,7 @@ public class User {
     @Column(nullable = false, unique = true, length = 320)
     private String email;
 
-    @Column(name = "password_hash", nullable = false, length = 255)
+    @Column(name = "password_hash", nullable = false)
     private String passwordHash;
 
     @Column(name = "first_name", nullable = false, columnDefinition = "text")
@@ -47,7 +47,9 @@ public class User {
     @Setter
     private String lastName;
 
-    public User(String firstName, String lastName) {
+    public User(String email, String passwordHash, String firstName, String lastName) {
+        this.email = email;
+        this.passwordHash = passwordHash;
         this.firstName = firstName;
         this.lastName = lastName;
     }
