@@ -8,11 +8,9 @@ public record LoginRequest (
 
     @NotBlank
     @Email
-    @Size(max = 320)
     String email,
 
     @NotBlank
-    @Size(min = 15, max = 64)
     String password
 
 ) {}
