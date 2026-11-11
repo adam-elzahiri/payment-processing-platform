@@ -4,10 +4,10 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.core.Authentication;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/users")
@@ -28,6 +28,21 @@ public class UserController {
         );
 
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
+    }
+
+    @GetMapping("/me")
+    public ResponseEntity<UserResponse> getCurrentUser(Authentication authentication) {
+        UUID userId = UUID.fromString(authentication.getName());
+        User currentUser = userService.getUserById(userId);
+
+        UserResponse response = new UserResponse(
+                currentUser.getId(),
+                currentUser.getFirstName(),
+                currentUser.getLastName(),
+                currentUser.getCreatedAt()
+        );
+
+        return ResponseEntity.ok(response);
     }
 
 }

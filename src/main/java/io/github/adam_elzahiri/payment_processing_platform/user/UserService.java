@@ -5,6 +5,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Locale;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -30,4 +31,7 @@ public class UserService {
         return userRepository.save(newUser);
     }
 
+    public User getUserById(UUID  userId) {
+        return userRepository.findById(userId).orElseThrow();
+    }
 }
