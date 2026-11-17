@@ -1,5 +1,6 @@
 package io.github.adam_elzahiri.payment_processing_platform.exception;
 
+import io.github.adam_elzahiri.payment_processing_platform.auth.exception.InvalidCredentialsException;
 import io.github.adam_elzahiri.payment_processing_platform.user.exception.EmailAlreadyInUseException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
@@ -15,6 +16,19 @@ public class ApiExceptionHandler {
 
     private URI newInstanceUri() {
         return URI.create("urn:uuid:" + UUID.randomUUID());
+    }
+
+    @ExceptionHandler(InvalidCredentialsException.class)
+    private ResponseEntity<ProblemDetail> handle(InvalidCredentialsException exception) {
+        ProblemDetail problem = ProblemDetail.forStatusAndDetail(
+                HttpStatus.UNAUTHORIZED,
+                exception.getMessage()
+        );
+        problem.setInstance(newInstanceUri());
+        problem.setTitle("Invalid credentials");
+        problem.setProperty("code", "INVALID_CREDENTIALS");
+
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(problem);
     }
 
     @ExceptionHandler(EmailAlreadyInUseException.class)
