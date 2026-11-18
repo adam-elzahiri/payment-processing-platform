@@ -18,7 +18,7 @@ public class TokenService {
 
     private final JwtEncoder jwtEncoder;
 
-    public LoginResponse createAccessToken(UUID userId) {
+    public AccessTokenResponse createAccessToken(UUID userId) {
         Instant now = Instant.now();
 
         JwtClaimsSet claims = JwtClaimsSet.builder()
@@ -31,7 +31,7 @@ public class TokenService {
                 .encode(JwtEncoderParameters.from(claims))
                 .getTokenValue();
 
-        return new LoginResponse(
+        return new AccessTokenResponse(
                 token,
                 "Bearer",
                 ACCESS_TOKEN_TTL.toSeconds()

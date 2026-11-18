@@ -17,7 +17,7 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
     private final TokenService tokenService;
 
-    public LoginResponse login(LoginRequest request) {
+    public AccessTokenResponse login(LoginRequest request) {
         String normalizedEmail = request.email()
                 .strip()
                 .toLowerCase(Locale.ROOT);

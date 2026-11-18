@@ -55,7 +55,7 @@ public class LoginIT {
                     password
             );
 
-            ResponseEntity<LoginResponse> response = positivePost(request);
+            ResponseEntity<AccessTokenResponse> response = positivePost(request);
 
             assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
             assertThat(response.getBody()).isNotNull();
@@ -131,11 +131,11 @@ public class LoginIT {
         }
     }
 
-    private ResponseEntity<LoginResponse> positivePost(LoginRequest request) {
+    private ResponseEntity<AccessTokenResponse> positivePost(LoginRequest request) {
         return restTemplate.postForEntity(
                 "/auth/login",
                 request,
-                LoginResponse.class
+                AccessTokenResponse.class
         );
     }
 
