@@ -39,7 +39,7 @@ public class ApiExceptionHandler {
                 .toList();
         problem.setInstance(newInstanceUri());
         problem.setTitle("Validation failed");
-        problem.setProperty("code", "VALIDATION_FAILED");
+        problem.setProperty("code", "REQUEST_VALIDATION_FAILED");
         problem.setProperty("errors", errors);
 
         return ResponseEntity.badRequest().body(problem);
