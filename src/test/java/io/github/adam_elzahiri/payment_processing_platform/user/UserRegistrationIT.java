@@ -41,7 +41,7 @@ public class UserRegistrationIT {
                     "firstName",
                     "lastName"
             );
-            ResponseEntity<CreateUserResponse> response = positivePost(request);
+            ResponseEntity<UserProfileResponse> response = positivePost(request);
 
             assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CREATED);
 
@@ -153,11 +153,11 @@ public class UserRegistrationIT {
         }
     }
 
-    private ResponseEntity<CreateUserResponse> positivePost(CreateUserRequest request) {
+    private ResponseEntity<UserProfileResponse> positivePost(CreateUserRequest request) {
         return restTemplate.postForEntity(
                 "/users",
                 request,
-                CreateUserResponse.class
+                UserProfileResponse.class
         );
     }
 

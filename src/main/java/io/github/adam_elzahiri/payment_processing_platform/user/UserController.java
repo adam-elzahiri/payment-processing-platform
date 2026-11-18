@@ -25,11 +25,11 @@ public class UserController {
     }
 
     @GetMapping("/me")
-    public ResponseEntity<CreateUserResponse> getCurrentUser(Authentication authentication) {
+    public ResponseEntity<UserProfileResponse> getCurrentUser(Authentication authentication) {
         UUID userId = UUID.fromString(authentication.getName());
         User currentUser = userService.getUserById(userId);
 
-        CreateUserResponse response = new CreateUserResponse(
+        UserProfileResponse response = new UserProfileResponse(
                 currentUser.getId(),
                 currentUser.getFirstName(),
                 currentUser.getLastName(),
