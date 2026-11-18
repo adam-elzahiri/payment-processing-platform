@@ -40,11 +40,10 @@ public class LoginIT {
     @Test
     void loggingInWithValidCredentialsReturnsAccessToken() {
         final String email = newEmail("valid-credentials");
-        final String password = "correct-horse-battery";
 
         User testUser = userRepository.save(new User(
                 email,
-                passwordEncoder.encode(password),
+                passwordEncoder.encode(DUMMY_PASSWORD),
                 "Test",
                 "User"
         ));
@@ -52,7 +51,7 @@ public class LoginIT {
         try {
             LoginRequest request = new LoginRequest(
                     email.toUpperCase(Locale.ROOT), // Uppercasing to test if email is normalized properly
-                    password
+                    DUMMY_PASSWORD
             );
 
             ResponseEntity<AccessTokenResponse> response = positivePost(request);
