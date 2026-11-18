@@ -17,10 +17,10 @@ public class UserController {
     private final UserService userService;
 
     @PostMapping
-    public ResponseEntity<UserResponse> createUser(@Valid @RequestBody CreateUserRequest createUserRequest) {
+    public ResponseEntity<CreateUserResponse> createUser(@Valid @RequestBody CreateUserRequest createUserRequest) {
         User savedUser = userService.createUser(createUserRequest);
 
-        UserResponse response = new UserResponse(
+        CreateUserResponse response = new CreateUserResponse(
                 savedUser.getId(),
                 savedUser.getFirstName(),
                 savedUser.getLastName(),
@@ -31,11 +31,11 @@ public class UserController {
     }
 
     @GetMapping("/me")
-    public ResponseEntity<UserResponse> getCurrentUser(Authentication authentication) {
+    public ResponseEntity<CreateUserResponse> getCurrentUser(Authentication authentication) {
         UUID userId = UUID.fromString(authentication.getName());
         User currentUser = userService.getUserById(userId);
 
-        UserResponse response = new UserResponse(
+        CreateUserResponse response = new CreateUserResponse(
                 currentUser.getId(),
                 currentUser.getFirstName(),
                 currentUser.getLastName(),
