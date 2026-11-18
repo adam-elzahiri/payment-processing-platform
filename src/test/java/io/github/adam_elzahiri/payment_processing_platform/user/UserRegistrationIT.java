@@ -1,5 +1,6 @@
 package io.github.adam_elzahiri.payment_processing_platform.user;
 
+import io.github.adam_elzahiri.payment_processing_platform.auth.AccessTokenResponse;
 import io.github.adam_elzahiri.payment_processing_platform.testsupport.PostgresHttpIntegrationTest;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -19,6 +20,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @PostgresHttpIntegrationTest
 public class UserRegistrationIT {
 
+    private static final long EXPECTED_TOKEN_TTL_SECONDS = 15 * 60;
     private static final String DUMMY_PASSWORD = "correct-horse-battery";
 
     @Autowired
@@ -31,7 +33,7 @@ public class UserRegistrationIT {
     private PasswordEncoder passwordEncoder;
 
     @Test
-    void registeringUserCreatesUserAndReturnsCreatedResponse() {
+    void registeringUserCreatesUserAndReturnsAccessTokenResponse() {
         final String email = newEmail("registration");
 
         try {
@@ -41,9 +43,19 @@ public class UserRegistrationIT {
                     "firstName",
                     "lastName"
             );
-            ResponseEntity<UserProfileResponse> response = positivePost(request);
+            ResponseEntity<AccessTokenResponse> response = restTemplate.postForEntity(
+                    "/users",
+                    request,
+                    AccessTokenResponse.class
+            );
 
             assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CREATED);
+
+            AccessTokenResponse token = response.getBody();
+            assertThat(token).isNotNull();
+            assertThat(token.accessToken()).isNotBlank();
+            assertThat(token.tokenType()).isEqualTo("Bearer");
+            assertThat(token.expiresInSeconds()).isEqualTo(EXPECTED_TOKEN_TTL_SECONDS);
 
             User savedUser = userRepository.findByEmail(email).orElseThrow();
             assertThat(savedUser.getId()).isNotNull();
@@ -151,14 +163,6 @@ public class UserRegistrationIT {
         } finally {
             cleanUp(emailInUse);
         }
-    }
-
-    private ResponseEntity<UserProfileResponse> positivePost(CreateUserRequest request) {
-        return restTemplate.postForEntity(
-                "/users",
-                request,
-                UserProfileResponse.class
-        );
     }
 
     private ResponseEntity<ProblemDetail> negativePost(CreateUserRequest request) {
