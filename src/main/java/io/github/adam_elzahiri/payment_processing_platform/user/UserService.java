@@ -1,5 +1,7 @@
 package io.github.adam_elzahiri.payment_processing_platform.user;
 
+import io.github.adam_elzahiri.payment_processing_platform.auth.AccessTokenResponse;
+import io.github.adam_elzahiri.payment_processing_platform.auth.TokenService;
 import io.github.adam_elzahiri.payment_processing_platform.user.exception.EmailAlreadyInUseException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -14,8 +16,9 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final TokenService tokenService;
 
-    User createUser(CreateUserRequest createUserRequest) {
+    AccessTokenResponse createUser(CreateUserRequest createUserRequest) {
         String normalizedEmail = createUserRequest.email()
                 .strip()
                 .toLowerCase(Locale.ROOT);
@@ -35,7 +38,9 @@ public class UserService {
                 createUserRequest.lastName().strip()
         );
 
-        return userRepository.save(newUser);
+        User savedUser = userRepository.save(newUser);
+
+        return tokenService.createAccessToken(savedUser.getId());
     }
 
     public User getUserById(UUID  userId) {

@@ -1,5 +1,6 @@
 package io.github.adam_elzahiri.payment_processing_platform.user;
 
+import io.github.adam_elzahiri.payment_processing_platform.auth.AccessTokenResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -17,15 +18,8 @@ public class UserController {
     private final UserService userService;
 
     @PostMapping
-    public ResponseEntity<CreateUserResponse> createUser(@Valid @RequestBody CreateUserRequest createUserRequest) {
-        User savedUser = userService.createUser(createUserRequest);
-
-        CreateUserResponse response = new CreateUserResponse(
-                savedUser.getId(),
-                savedUser.getFirstName(),
-                savedUser.getLastName(),
-                savedUser.getCreatedAt()
-        );
+    public ResponseEntity<AccessTokenResponse> createUser(@Valid @RequestBody CreateUserRequest createUserRequest) {
+        AccessTokenResponse response = userService.createUser(createUserRequest);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
