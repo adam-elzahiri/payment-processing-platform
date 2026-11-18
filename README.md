@@ -9,7 +9,7 @@ A personal Java and Spring Boot project exploring account-to-account payments an
 
 ## Technology
 
-Java 21 · Spring Boot 4.1.1 · Maven · PostgreSQL 17 · Flyway · Spring Data JPA · OpenAPI/Swagger · Docker Compose
+Java 21 · Spring Boot 4.1.1 · Maven · PostgreSQL 17 · Flyway · Spring Data JPA · OpenAPI/Swagger · Docker · Docker Compose
 
 ## License
 
