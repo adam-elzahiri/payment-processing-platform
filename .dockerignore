@@ -1,0 +1,12 @@
+.env
+.env.*
+
+.git/
+.idea/
+.run/
+.gitattributes
+mvnw.cmd
+target/
+docs/
+compose.yaml
+README.md
