@@ -18,7 +18,7 @@ import java.util.UUID;
 @RestControllerAdvice
 public class ApiExceptionHandler {
 
-    private URI newInstanceUri() {
+    private static URI newInstanceUri() {
         return URI.create("urn:uuid:" + UUID.randomUUID());
     }
 
