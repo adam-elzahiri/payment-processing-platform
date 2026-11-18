@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.resttestclient.TestRestTemplate;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ProblemDetail;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.jwt.Jwt;
@@ -22,6 +23,8 @@ public class LoginIT {
 
     private static final long EXPECTED_TOKEN_TTL_SECONDS = 15 * 60;
 
+    private static final String DUMMY_PASSWORD = "correct-horse-battery";
+
     @Autowired
     private TestRestTemplate restTemplate;
 
@@ -36,8 +39,8 @@ public class LoginIT {
 
     @Test
     void loggingInWithValidCredentialsReturnsAccessToken() {
-        String email = "login-" + UUID.randomUUID() + "@example.com";
-        String password = "correct-horse-battery";
+        final String email = newEmail("valid-credentials");
+        final String password = "correct-horse-battery";
 
         User testUser = userRepository.save(new User(
                 email,
@@ -48,15 +51,11 @@ public class LoginIT {
 
         try {
             LoginRequest request = new LoginRequest(
-                    email.toUpperCase(Locale.ROOT),
+                    email.toUpperCase(Locale.ROOT), // Uppercasing to test if email is normalized properly
                     password
             );
 
-            ResponseEntity<LoginResponse> response = restTemplate.postForEntity(
-                    "/auth/login",
-                    request,
-                    LoginResponse.class
-            );
+            ResponseEntity<LoginResponse> response = positivePost(request);
 
             assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
             assertThat(response.getBody()).isNotNull();
@@ -70,4 +69,87 @@ public class LoginIT {
             userRepository.findByEmail(email).ifPresent(userRepository::delete);
         }
     }
+
+    @Test
+    void loggingInWithIncorrectEmailReturnsUnauthorizedResponse() {
+        final String email = newEmail("incorrect-used-email");
+        final String invalidEmail = newEmail("incorrect-used-email");
+
+        userRepository.save(new User(
+                email,
+                passwordEncoder.encode(DUMMY_PASSWORD),
+                "Test",
+                "User"
+        ));
+
+        try {
+            LoginRequest request = new LoginRequest(
+                    invalidEmail,
+                    DUMMY_PASSWORD
+            );
+
+            ResponseEntity<ProblemDetail> response = negativePost(request);
+
+            assertThat(response.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
+
+            ProblemDetail problem = response.getBody();
+            assertThat(problem).isNotNull();
+            assertThat(problem.getProperties())
+                    .containsEntry("code", "INVALID_CREDENTIALS");
+        } finally {
+            userRepository.findByEmail(email).ifPresent(userRepository::delete);
+        }
+    }
+
+    @Test
+    void loggingInWithIncorrectPasswordReturnsUnauthorizedResponse() {
+        final String email = newEmail("incorrect-password");
+
+        userRepository.save(new User(
+                email,
+                passwordEncoder.encode(DUMMY_PASSWORD),
+                "Test",
+                "User"
+        ));
+
+        try {
+            LoginRequest request = new LoginRequest(
+                    email,
+                    "incorrect-password"
+            );
+
+            ResponseEntity<ProblemDetail> response = negativePost(request);
+
+            assertThat(response.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
+
+            ProblemDetail problem = response.getBody();
+            assertThat(problem).isNotNull();
+            assertThat(problem.getProperties())
+                    .containsEntry("code", "INVALID_CREDENTIALS");
+        } finally {
+            userRepository.findByEmail(email).ifPresent(userRepository::delete);
+        }
+    }
+
+    private ResponseEntity<LoginResponse> positivePost(LoginRequest request) {
+        return restTemplate.postForEntity(
+                "/auth/login",
+                request,
+                LoginResponse.class
+        );
+    }
+
+    private ResponseEntity<ProblemDetail> negativePost(LoginRequest request) {
+        return restTemplate.postForEntity(
+                "/auth/login",
+                request,
+                ProblemDetail.class
+        );
+    }
+
+    private static String newEmail(String context) {
+        return (context + "-" + UUID.randomUUID() + "@example.com")
+                .toLowerCase(Locale.ROOT);
+    }
+
 }
