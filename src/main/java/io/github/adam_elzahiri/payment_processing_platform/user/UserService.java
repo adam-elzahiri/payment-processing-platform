@@ -2,8 +2,10 @@ package io.github.adam_elzahiri.payment_processing_platform.user;
 
 import io.github.adam_elzahiri.payment_processing_platform.auth.AccessTokenResponse;
 import io.github.adam_elzahiri.payment_processing_platform.auth.TokenService;
+import io.github.adam_elzahiri.payment_processing_platform.infrastructure.persistence.hibernate.HibernateConstraintViolationDetector;
 import io.github.adam_elzahiri.payment_processing_platform.user.exception.EmailAlreadyInUseException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -14,6 +16,8 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class UserService {
 
+    private static final String EMAIL_UNIQUE_CONSTRAINT_NAME = "app_user_email_key";
+
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final TokenService tokenService;
@@ -22,12 +26,6 @@ public class UserService {
         String normalizedEmail = createUserRequest.email()
                 .strip()
                 .toLowerCase(Locale.ROOT);
-
-        // Fast pre-check to reject known duplicates.
-        // The database unique email constraint remains authoritative under concurrency.
-        if (userRepository.existsByEmail(normalizedEmail)) {
-            throw new EmailAlreadyInUseException();
-        }
 
         String passwordHash = passwordEncoder.encode(createUserRequest.password());
 
@@ -38,7 +36,16 @@ public class UserService {
                 createUserRequest.lastName().strip()
         );
 
-        User savedUser = userRepository.save(newUser);
+        User savedUser;
+        try {
+            savedUser = userRepository.saveAndFlush(newUser);
+        } catch (DataIntegrityViolationException exception) {
+            if (HibernateConstraintViolationDetector
+                    .violatesConstraint(exception, EMAIL_UNIQUE_CONSTRAINT_NAME)) {
+                throw new EmailAlreadyInUseException();
+            }
+            throw exception;
+        }
 
         return tokenService.createAccessToken(savedUser.getId());
     }
@@ -46,4 +53,5 @@ public class UserService {
     public User getUserById(UUID  userId) {
         return userRepository.findById(userId).orElseThrow();
     }
+
 }
