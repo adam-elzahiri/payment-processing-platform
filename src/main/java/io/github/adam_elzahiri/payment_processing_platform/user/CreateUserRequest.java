@@ -8,7 +8,7 @@ public record CreateUserRequest(
 
         @NotBlank
         @Email
-        @Size(max = 320)
+        @Size(max = 255)
         String email,
 
         @NotBlank
