@@ -25,8 +25,18 @@ public class AuthService {
         User user = userRepository.findByEmail(normalizedEmail)
                 .orElseThrow(InvalidCredentialsException::new);
 
-        if (!passwordEncoder.matches(request.password(), user.getPasswordHash())) {
+        String currentPasswordHash = user.getPasswordHash();
+        if (!passwordEncoder.matches(request.password(), currentPasswordHash)) {
             throw new InvalidCredentialsException();
+        }
+
+        if (passwordEncoder.upgradeEncoding(currentPasswordHash)) {
+            String upgradedPasswordHash = passwordEncoder.encode(request.password());
+            userRepository.updatePasswordHashIfUnchanged(
+                    user.getId(),
+                    currentPasswordHash,
+                    upgradedPasswordHash
+            );
         }
 
         return tokenService.createAccessToken(user.getId());
